@@ -1,0 +1,84 @@
+1. Progeny simulations with R
+-----------------------------
+#### Simple probabilistic simulation
+We will start with a very basic probabilistic model.
+Let's say we want to simulate a sequence 10 nucleotides long.
+For this example, nucelotide bases can appear with equal p=0.25 probability at every position.
+This part is inspired by Chapter 10 in (Krijnen 2009).
+
+```{r}
+sample(c("A","C","T","G"),10,rep=TRUE,prob=c(0.25,0.25,0.25,0.25))
+```
+
+If we would like to simulate a GC rich region we could alter the probabilities as follow:
+
+```{r}
+sample(c("A","C","T","G"),10,rep=TRUE,prob=c(0.15,0.35,0.15,0.35))
+```
+
+#### Haploid chromosome simulation from parental chromosomes
+We will simulate two independent parental chromatids and use them 
+to produce a haploid chromosome with recombination events.
+
+
+```{r}
+paternal<-sample(c("A","C","T","G"),10,rep=TRUE,prob=c(0.25,0.25,0.25,0.25))
+maternal<-sample(c("A","C","T","G"),10,rep=TRUE,prob=c(0.25,0.25,0.25,0.25))
+paternal
+maternal
+```
+
+Let's say recombination events occur with a 0.3 probability in any position
+of our 10 nucleotides genome.
+We can simulate recombination events in this way.
+
+```{r}
+recombination.event<-sample(c(TRUE,FALSE),10,prob=c(0.3,0.7),rep=TRUE)
+recombination.event
+
+```
+Then we can use those simulated recombination events to switch from an initial
+paternal or maternal chromatide when generating the child chromatid (as in gamete formation).
+
+```{r}
+# assigning the starting parental genome source
+current.genome<-sample(c('paternal','maternal'),1,prob=c(0.5,0.5))
+# initializing empty arrays for the child genome and parental path
+child<-c();
+parent.path<-c();
+
+# this loop will genereate the child genome based on the parents and
+# the recombination events calculated previously
+
+for (base.index in 1:length(paternal)) {
+  if (recombination.event[base.index]){ #switching current parental genome
+      if(current.genome=='paternal'){
+         current.genome<-'maternal'
+      } else {
+          current.genome<-'paternal'
+      }      
+   }   
+   
+   if(current.genome=='paternal'){
+      child[base.index]<-paternal[base.index]
+   } else {
+      child[base.index]<-maternal[base.index]	
+   }
+   parent.path[base.index]<-current.genome
+}
+
+```
+the child genome would look like
+```{r}
+child
+```
+and the recorded parental source of the nucleotides will be
+```{r}
+parent.path
+```
+
+#### References
+Krijnen WP. 2009. Applied Statistics for Bioinformatics using R. GNU Free Document License.
+
+#### Author
+Luis Avila (lmavila@gmail.com)

@@ -1,0 +1,89 @@
+2. Progeny simulations with R
+-----------------------------
+#### A different nomenclature and more simulation
+Since we are interested in polymorphic sites, like the SNPs that are the ouput
+of Genotyping By Sequencing (GBS)  assays, instead of using the nucleotide bases (a,c,t,g)
+we will use the following symbols for a haploid genotype:
+
+* 0 reference allele
+* 1 alternate allele
+
+In the case of a diploid genotype, the symbols will be as follows.
+
+* 0 homozygous for the reference allele
+* 1 heterozygous reference/alternate allele
+* 2 homozygous alternate allele
+
+You would notice the convenience that if phasing is not important or unknown,
+a diploid genotype can be stored as a one-dimensional array obtained by adding
+the values of the two parental haploid genotypes.  
+
+Our basic probabilistic simulator can be now reformulated like this:
+
+```{r}
+sample(c(0,1),10,rep=TRUE,prob=c(0.5,0.5))
+```
+
+#### A simple generalized simulator
+Now, let's make a generalized simulator that receives the length of the genome to
+simulate and the whole genome recombination rate and generates two parental haploid genomes
+and simulates child diploid genomes. A lot of the code, including the main loop is copied from
+our previous code.
+
+Input: 
+
+* \# of markers in the genome
+* probability of having a recombination event between two markers
+
+Output:
+
+* two parental genotypes
+* one child genotype derived from the parental genotypes and recombination events
+* the state path of the source of the child genotype, maternal or paternal
+```{r eval=TRUE, echo=FALSE}
+
+source("SharedFunctions.R")
+
+
+```
+
+```{r tidy=TRUE, tidy.opts=list(comment=FALSE)}
+SimulateChromatid <- function(num.markers=10, recomb.prob=0.3) {
+  paternal<-sample(c(0,1),num.markers,rep=TRUE,prob=c(0.5,0.5))
+  maternal<-sample(c(0,1),num.markers,rep=TRUE,prob=c(0.5,0.5))
+  recombination.event<-sample(c(TRUE,FALSE),num.markers,prob=c(recomb.prob,1-recomb.prob),rep=TRUE)
+  ## creating empty vectors  
+  child<-c();
+  parent.path<-c();
+  current.genome<-sample(c('paternal','maternal'),1,prob=c(0.5,0.5))
+  ## main loop to generate child chromatid genotype
+  for (base.index in 1:length(paternal)) {
+  
+    if (recombination.event[base.index]){ #switching current parental genome
+      if(current.genome=='paternal'){
+        current.genome<-'maternal'
+      } else {
+          current.genome<-'paternal'
+      }      
+    }   
+   
+    if(current.genome=='paternal'){
+       child[base.index]<-paternal[base.index]
+    } else {
+       child[base.index]<-maternal[base.index]	
+    }
+    parent.path[base.index]<-current.genome
+  }
+  return(list(maternal=maternal,paternal=paternal,parent.path=parent.path,child=child))
+}
+```
+
+To test the function we just created we can call it without parameters.
+I will use its defaults, 10 markers and 0.3 probability of recombination.
+
+```{r}
+SimulateChromatid()
+```
+
+#### Author
+Luis Avila (lmavila@gmail.com)

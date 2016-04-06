@@ -1,0 +1,129 @@
+4. The Viterbi Algorithm
+-----------------------------
+
+#### First implementation
+This is just a test of a viterbi implementation
+with a fix Emission matrix for 5 observations.
+Adapted from (Krijnen 2009).
+```{r eval=TRUE, echo=FALSE}
+
+source("SharedFunctions.R")
+
+
+```
+
+
+```{r}
+
+start.p<-c(0.4,0.2,0.2,0.2) #The starting probabilities chosen arbitrarily 
+emit.p<-GetEmissionProb(0,0,1,0) # For this example we are having just one emission matrix, not 16 
+                                 # to keep it simple for now we are not using the parent genotypes or phasing.
+#obs<-child1.genotype
+obs<-c(0,0,1,1,2)
+trans.p<-GetTransitionProb(0.2) # Getting the transition probabilities matrix
+
+Viterbi <- function(obs,start.p, trans.p, emit.p) {
+  #initializing
+  v <- matrix(NA, nr=length(obs), nc=dim(trans.p)[1]) ## we create a 10x4 empty matrix (10 obs, 4 hidden states)
+  for(i in 1:4){ #for each of the hidden states we calculate the initial probabilities
+    v[1,i]=start.p[i]*emit.p[i,obs[1]+1]
+  }
+  
+  for(i in 2:length(obs)) {# from observation 2 to t
+    for (l in 1:dim(trans.p)[1]) { #from state 1 to N (4 states)
+      v[i,l] <- emit.p[l,obs[i]+1] * max(v[(i-1),] * trans.p[l,])
+    }
+  }   
+      
+return(v) 
+}
+
+
+v<-Viterbi (obs,start.p, trans.p, emit.p)
+v
+```
+With the matrix v calculated, the state path given us the maximum 
+probability can be found by the maximum values per row, with this function.
+
+```{r}
+vitrowmax <- apply(v, 1, function(x) which.max(x))
+vitrowmax
+```
+#### Viterbi: Second implementation
+Now we are going to adjust our implementation of the Viterbi algorithm 
+to use the information we have about the parents phasing.
+
+```{r}
+child1.chromatid.mom<-SimulateChromatid()
+child1.chromatid.mom
+child1.chromatid.dad<-SimulateChromatid()
+child1.chromatid.dad
+
+### for our observation in the child
+obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+obs
+
+
+start.p<-c(0.4,0.2,0.2,0.2);
+
+trans.p<-GetTransitionProb(0.3)
+
+Viterbi2 <- function(obs,start.p, trans.p,mom.chromatid,dad.chromatid) {
+  #initializing
+  v <- matrix(NA, nr=length(obs), nc=dim(trans.p)[1])
+  emit.p<-GetEmissionProb(mom.chromatid$maternal[1],
+                          mom.chromatid$paternal[1],
+                          dad.chromatid$maternal[1],
+                          dad.chromatid$paternal[1])
+  for(i in 1:4){
+    v[1,i]=start.p[i]*emit.p[i,obs[1]+1]
+  }
+  
+  for(i in 2:length(obs)) {# from observation 2 to t
+    emit.p<-GetEmissionProb(mom.chromatid$maternal[i],
+                            mom.chromatid$paternal[i],
+                            dad.chromatid$maternal[i],
+                            dad.chromatid$paternal[i])
+    for (l in 1:dim(trans.p)[1]) { #from state 1 to N (4 states)
+      v[i,l] <- emit.p[l,obs[i]+1] * max(v[(i-1),] * trans.p[l,])
+    }
+  }   
+  
+  return(v) 
+}
+
+
+
+v.2<-Viterbi2 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+v.2
+```
+And to get the parent path
+
+```{r}
+
+vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+vitrowmax.2
+```
+
+And in order to compare our simulated states with the estimated states obtained using our
+HHMmodel, the observed genotype of the simulated progeny and the genotype and phasing of
+the simulated parents.
+ 
+```{r}
+simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+estimated<-rownames(trans.p)[vitrowmax.2]
+simulated
+estimated
+simulated==estimated
+
+```
+
+The model seems to be working with the simulated data, most predictions are right
+and some are wrong. To better assess the accuracy of the model we will run simulations
+with more markers and different recombination rates.
+
+#### References
+Krijnen WP. 2009. Applied Statistics for Bioinformatics using R. GNU Free Document License.
+
+#### Author
+Luis Avila (lmavila@gmail.com)
