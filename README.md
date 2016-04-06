@@ -1,5 +1,5 @@
 # HMMTutorial
-An R tutoria on how to use HHMs to find recombination events in GBS data
+An R tutorial on how to use HHMs to find recombination events in GBS data
 from a biparental cross.
 
 Files are in R markdown format .Rmd
