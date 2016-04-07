@@ -159,35 +159,35 @@ vitrowmax</code></pre>
 <pre class="r"><code>child1.chromatid.mom&lt;-SimulateChromatid()
 child1.chromatid.mom</code></pre>
 <pre><code>## $maternal
-##  [1] 0 1 1 0 0 1 0 0 1 1
+##  [1] 0 1 1 0 1 1 0 1 0 0
 ## 
 ## $paternal
-##  [1] 0 0 0 0 1 1 0 0 0 1
+##  [1] 0 1 0 1 0 0 0 0 0 1
 ## 
 ## $parent.path
-##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot;
-##  [7] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot;
+##  [1] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot;
+##  [7] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot;
 ## 
 ## $child
-##  [1] 0 0 1 0 0 1 0 0 1 1</code></pre>
+##  [1] 0 1 1 1 0 1 0 1 0 0</code></pre>
 <pre class="r"><code>child1.chromatid.dad&lt;-SimulateChromatid()
 child1.chromatid.dad</code></pre>
 <pre><code>## $maternal
-##  [1] 1 0 0 1 1 0 1 0 1 0
+##  [1] 0 0 0 0 1 0 1 1 0 1
 ## 
 ## $paternal
-##  [1] 0 1 0 1 0 1 0 0 0 1
+##  [1] 1 1 1 1 1 0 0 0 0 0
 ## 
 ## $parent.path
-##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot;
-##  [7] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot;
+##  [1] &quot;paternal&quot; &quot;maternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;paternal&quot; &quot;paternal&quot;
+##  [7] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot;
 ## 
 ## $child
-##  [1] 0 1 0 1 1 1 0 0 0 1</code></pre>
+##  [1] 1 0 1 0 1 0 0 0 0 1</code></pre>
 <pre class="r"><code>### for our observation in the child
 obs&lt;-child1.chromatid.mom$child+child1.chromatid.dad$child
 obs</code></pre>
-<pre><code>##  [1] 0 1 1 1 1 2 0 0 1 2</code></pre>
+<pre><code>##  [1] 1 1 2 1 1 1 0 1 0 1</code></pre>
 <pre class="r"><code>start.p&lt;-c(0.4,0.2,0.2,0.2);
 
 trans.p&lt;-GetTransitionProb(0.3)
@@ -220,38 +220,38 @@ Viterbi2 &lt;- function(obs,start.p, trans.p,mom.chromatid,dad.chromatid) {
 
 v.2&lt;-Viterbi2 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
 v.2</code></pre>
-<pre><code>##            [,1]         [,2]       [,3]        [,4]
-##  [1,] 0.000e+00 0.2000000000 0.0000e+00 2.00000e-01
-##  [2,] 2.000e-02 0.0000000000 0.0000e+00 1.40000e-01
-##  [3,] 1.400e-02 0.0140000000 0.0000e+00 0.00000e+00
-##  [4,] 9.800e-03 0.0098000000 1.4000e-03 1.40000e-03
-##  [5,] 6.860e-03 0.0000000000 0.0000e+00 9.80000e-04
-##  [6,] 0.000e+00 0.0006860000 0.0000e+00 6.86000e-04
-##  [7,] 0.000e+00 0.0004802000 0.0000e+00 4.80200e-04
-##  [8,] 4.802e-05 0.0003361400 4.8020e-05 3.36140e-04
-##  [9,] 0.000e+00 0.0002352980 3.3614e-05 0.00000e+00
-## [10,] 0.000e+00 0.0001647086 0.0000e+00 2.35298e-05</code></pre>
+<pre><code>##            [,1]      [,2]     [,3]      [,4]
+##  [1,] 0.000e+00 2.000e-01 0.00e+00 2.000e-01
+##  [2,] 2.000e-02 0.000e+00 2.00e-02 0.000e+00
+##  [3,] 0.000e+00 2.000e-03 0.00e+00 0.000e+00
+##  [4,] 0.000e+00 1.400e-03 2.00e-04 0.000e+00
+##  [5,] 0.000e+00 0.000e+00 1.40e-04 1.400e-04
+##  [6,] 1.400e-05 1.400e-05 0.00e+00 0.000e+00
+##  [7,] 0.000e+00 9.800e-06 0.00e+00 1.400e-06
+##  [8,] 0.000e+00 6.860e-06 9.80e-07 0.000e+00
+##  [9,] 6.860e-07 4.802e-06 6.86e-07 6.860e-07
+## [10,] 4.802e-07 0.000e+00 0.00e+00 4.802e-07</code></pre>
 <p>And to get the parent path</p>
 <pre class="r"><code>vitrowmax.2 &lt;- apply(v.2, 1, function(x) which.max(x))
 vitrowmax.2</code></pre>
-<pre><code>##  [1] 2 4 1 1 1 2 2 2 2 2</code></pre>
+<pre><code>##  [1] 2 1 2 2 3 1 2 2 2 1</code></pre>
 <p>And in order to compare our simulated states with the estimated states obtained using our HHMmodel, the observed genotype of the simulated progeny and the genotype and phasing of the simulated parents.</p>
 <pre class="r"><code>simulated&lt;-paste(&quot;mom.&quot;,child1.chromatid.mom$parent.path,&quot;/&quot;,&quot;dad.&quot;,child1.chromatid.dad$parent.path,sep=&quot;&quot;)
 estimated&lt;-rownames(trans.p)[vitrowmax.2]
 simulated</code></pre>
-<pre><code>##  [1] &quot;mom.paternal/dad.paternal&quot; &quot;mom.paternal/dad.paternal&quot;
-##  [3] &quot;mom.maternal/dad.maternal&quot; &quot;mom.maternal/dad.maternal&quot;
-##  [5] &quot;mom.maternal/dad.maternal&quot; &quot;mom.maternal/dad.paternal&quot;
+<pre><code>##  [1] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.maternal&quot;
+##  [3] &quot;mom.maternal/dad.paternal&quot; &quot;mom.paternal/dad.maternal&quot;
+##  [5] &quot;mom.paternal/dad.paternal&quot; &quot;mom.maternal/dad.paternal&quot;
 ##  [7] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.paternal&quot;
-##  [9] &quot;mom.maternal/dad.paternal&quot; &quot;mom.paternal/dad.paternal&quot;</code></pre>
+##  [9] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.maternal&quot;</code></pre>
 <pre class="r"><code>estimated</code></pre>
-<pre><code>##  [1] &quot;mom.maternal/dad.paternal&quot; &quot;mom.paternal/dad.paternal&quot;
-##  [3] &quot;mom.maternal/dad.maternal&quot; &quot;mom.maternal/dad.maternal&quot;
-##  [5] &quot;mom.maternal/dad.maternal&quot; &quot;mom.maternal/dad.paternal&quot;
+<pre><code>##  [1] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.maternal&quot;
+##  [3] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.paternal&quot;
+##  [5] &quot;mom.paternal/dad.maternal&quot; &quot;mom.maternal/dad.maternal&quot;
 ##  [7] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.paternal&quot;
-##  [9] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.paternal&quot;</code></pre>
+##  [9] &quot;mom.maternal/dad.paternal&quot; &quot;mom.maternal/dad.maternal&quot;</code></pre>
 <pre class="r"><code>simulated==estimated</code></pre>
-<pre><code>##  [1] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE</code></pre>
+<pre><code>##  [1]  TRUE  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE</code></pre>
 <p>The model seems to be working with the simulated data, most predictions are right and some are wrong. To better assess the accuracy of the model we will run simulations with more markers and different recombination rates.</p>
 </div>
 <div id="references" class="section level4">

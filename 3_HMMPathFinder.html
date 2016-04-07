@@ -123,30 +123,30 @@ $(document).ready(function () {
 child1.chromatid.dad&lt;-SimulateChromatid()
 child1.chromatid.mom[&quot;child&quot;]</code></pre>
 <pre><code>## $child
-##  [1] 1 1 1 0 0 1 1 0 1 1</code></pre>
+##  [1] 0 0 1 0 0 1 0 0 0 1</code></pre>
 <pre class="r"><code>child1.chromatid.dad[&quot;child&quot;]</code></pre>
 <pre><code>## $child
-##  [1] 1 1 1 1 0 0 1 1 0 0</code></pre>
+##  [1] 0 0 1 0 1 0 1 1 0 0</code></pre>
 <p>Then our diploid “child” genotype would be. (Remember, 0 for homozygous reference, 1 for heterozygous and 2 for homozygous alternate allele).</p>
 <pre class="r"><code>child1.genotype&lt;-child1.chromatid.mom$child+child1.chromatid.dad$child
 child1.genotype</code></pre>
-<pre><code>##  [1] 2 2 2 1 0 1 2 1 1 1</code></pre>
+<pre><code>##  [1] 0 0 2 0 1 1 1 1 0 1</code></pre>
 <p>And we still have acces to the phased parent genotype.</p>
 <pre class="r"><code>child1.chromatid.mom$maternal</code></pre>
-<pre><code>##  [1] 1 1 1 0 0 1 1 0 1 1</code></pre>
+<pre><code>##  [1] 0 0 0 1 0 0 0 0 0 1</code></pre>
 <pre class="r"><code>child1.chromatid.mom$paternal</code></pre>
-<pre><code>##  [1] 1 1 1 0 0 0 1 0 1 0</code></pre>
+<pre><code>##  [1] 0 0 1 0 1 1 0 0 1 1</code></pre>
 <pre class="r"><code>child1.chromatid.dad$maternal</code></pre>
-<pre><code>##  [1] 0 1 0 0 0 0 0 1 1 0</code></pre>
+<pre><code>##  [1] 1 0 1 0 0 0 1 1 0 1</code></pre>
 <pre class="r"><code>child1.chromatid.dad$paternal</code></pre>
-<pre><code>##  [1] 1 1 1 1 0 0 1 1 0 0</code></pre>
+<pre><code>##  [1] 0 0 1 0 1 0 0 1 0 0</code></pre>
 <p>Now using the diploid child genotype and parental phased chromatid genotypes we can infer the parent.path with a Hidden Markov Model (HMM), and compare our inference to the actual parent.paths we have stored from the simulation.</p>
 <pre class="r"><code>child1.chromatid.mom$parent.path</code></pre>
-<pre><code>##  [1] &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot;
-##  [7] &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot;</code></pre>
+<pre><code>##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;paternal&quot;
+##  [7] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot;</code></pre>
 <pre class="r"><code>child1.chromatid.dad$parent.path</code></pre>
-<pre><code>##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot;
-##  [7] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot;</code></pre>
+<pre><code>##  [1] &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot; &quot;maternal&quot;
+##  [7] &quot;maternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot;</code></pre>
 </div>
 <div id="defining-our-hmm" class="section level4">
 <h4>Defining our HMM</h4>

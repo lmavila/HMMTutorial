@@ -6,12 +6,12 @@ source("SharedFunctions.R")
 
 ```
 
-#### Simulating and estimating for 100 loci
+#### Simulating and estimating for 10,000 loci
 ```{r}
   start.p<-c(0.25,0.25,0.25,0.25)
-  hist(ViterbiSimulator(10000,100,start.p,0.1),main="True positives in 10,000 simulations with 100 markers\n r=0.1",xlab="true positives")
-  hist(ViterbiSimulator(10000,100,start.p,0.01),main="True positives in 10,000 simulations with 100 markers\n r=0.01",xlab="true positives")
-  hist(ViterbiSimulator(10000,100,start.p,0.001),main="True positives in 10,000 simulations with 100 markers\n r=0.001",xlab="true positives")
+  hist(ViterbiSimulator(10000,100,start.p,0.1),main="True positives in 100 simulations with 10,000 markers\n r=0.1",xlab="true positives")
+  hist(ViterbiSimulator(10000,100,start.p,0.01),main="True positives in 100 simulations with 10,000 markers\n r=0.01",xlab="true positives")
+  hist(ViterbiSimulator(10000,100,start.p,0.001),main="True positives in 100 simulations with 10,000 markers\n r=0.001",xlab="true positives")
 ```
 
 

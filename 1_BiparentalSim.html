@@ -117,10 +117,10 @@ $(document).ready(function () {
 <h4>Simple probabilistic simulation</h4>
 <p>We will start with a very basic probabilistic model. Let’s say we want to simulate a sequence 10 nucleotides long. For this example, nucelotide bases can appear with equal p=0.25 probability at every position. This part is inspired by Chapter 10 in (Krijnen 2009).</p>
 <pre class="r"><code>sample(c(&quot;A&quot;,&quot;C&quot;,&quot;T&quot;,&quot;G&quot;),10,rep=TRUE,prob=c(0.25,0.25,0.25,0.25))</code></pre>
-<pre><code>##  [1] &quot;T&quot; &quot;G&quot; &quot;G&quot; &quot;C&quot; &quot;A&quot; &quot;T&quot; &quot;G&quot; &quot;T&quot; &quot;A&quot; &quot;G&quot;</code></pre>
+<pre><code>##  [1] &quot;T&quot; &quot;G&quot; &quot;A&quot; &quot;A&quot; &quot;G&quot; &quot;G&quot; &quot;T&quot; &quot;A&quot; &quot;G&quot; &quot;T&quot;</code></pre>
 <p>If we would like to simulate a GC rich region we could alter the probabilities as follow:</p>
 <pre class="r"><code>sample(c(&quot;A&quot;,&quot;C&quot;,&quot;T&quot;,&quot;G&quot;),10,rep=TRUE,prob=c(0.15,0.35,0.15,0.35))</code></pre>
-<pre><code>##  [1] &quot;A&quot; &quot;G&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;T&quot; &quot;T&quot; &quot;A&quot; &quot;G&quot; &quot;C&quot;</code></pre>
+<pre><code>##  [1] &quot;C&quot; &quot;T&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;G&quot; &quot;A&quot; &quot;G&quot; &quot;A&quot; &quot;G&quot;</code></pre>
 </div>
 <div id="haploid-chromosome-simulation-from-parental-chromosomes" class="section level4">
 <h4>Haploid chromosome simulation from parental chromosomes</h4>
@@ -128,13 +128,13 @@ $(document).ready(function () {
 <pre class="r"><code>paternal&lt;-sample(c(&quot;A&quot;,&quot;C&quot;,&quot;T&quot;,&quot;G&quot;),10,rep=TRUE,prob=c(0.25,0.25,0.25,0.25))
 maternal&lt;-sample(c(&quot;A&quot;,&quot;C&quot;,&quot;T&quot;,&quot;G&quot;),10,rep=TRUE,prob=c(0.25,0.25,0.25,0.25))
 paternal</code></pre>
-<pre><code>##  [1] &quot;G&quot; &quot;A&quot; &quot;G&quot; &quot;A&quot; &quot;G&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;T&quot; &quot;C&quot;</code></pre>
+<pre><code>##  [1] &quot;T&quot; &quot;G&quot; &quot;G&quot; &quot;A&quot; &quot;G&quot; &quot;T&quot; &quot;C&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot;</code></pre>
 <pre class="r"><code>maternal</code></pre>
-<pre><code>##  [1] &quot;A&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;T&quot; &quot;G&quot; &quot;G&quot; &quot;A&quot; &quot;T&quot;</code></pre>
+<pre><code>##  [1] &quot;C&quot; &quot;A&quot; &quot;A&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;G&quot; &quot;T&quot; &quot;C&quot;</code></pre>
 <p>Let’s say recombination events occur with a 0.3 probability in any position of our 10 nucleotides genome. We can simulate recombination events in this way.</p>
 <pre class="r"><code>recombination.event&lt;-sample(c(TRUE,FALSE),10,prob=c(0.3,0.7),rep=TRUE)
 recombination.event</code></pre>
-<pre><code>##  [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE</code></pre>
+<pre><code>##  [1] FALSE FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE  TRUE</code></pre>
 <p>Then we can use those simulated recombination events to switch from an initial paternal or maternal chromatide when generating the child chromatid (as in gamete formation).</p>
 <pre class="r"><code># assigning the starting parental genome source
 current.genome&lt;-sample(c('paternal','maternal'),1,prob=c(0.5,0.5))
@@ -163,11 +163,11 @@ for (base.index in 1:length(paternal)) {
 }</code></pre>
 <p>the child genome would look like</p>
 <pre class="r"><code>child</code></pre>
-<pre><code>##  [1] &quot;A&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;C&quot; &quot;T&quot; &quot;C&quot; &quot;C&quot; &quot;T&quot; &quot;C&quot;</code></pre>
+<pre><code>##  [1] &quot;T&quot; &quot;G&quot; &quot;A&quot; &quot;A&quot; &quot;G&quot; &quot;C&quot; &quot;C&quot; &quot;G&quot; &quot;T&quot; &quot;A&quot;</code></pre>
 <p>and the recorded parental source of the nucleotides will be</p>
 <pre class="r"><code>parent.path</code></pre>
-<pre><code>##  [1] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot;
-##  [7] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot;</code></pre>
+<pre><code>##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot;
+##  [7] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot;</code></pre>
 </div>
 <div id="references" class="section level4">
 <h4>References</h4>
