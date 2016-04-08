@@ -10,5 +10,5 @@ setwd("~/your local directory/")
 
 rmarkdown::render("1_BiparentalSim.Rmd")
 
-Files 5_Simulations.Rmd and 6_MoreSimulations.Rmd have thousands of simulations and take about 10 min to render.
+Files 5_Simulations.Rmd and 6_MoreSimulations.Rmd make thousands of simulations and take about 10 min to render.
 

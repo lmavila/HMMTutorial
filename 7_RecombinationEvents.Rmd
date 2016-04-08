@@ -1,0 +1,112 @@
+7. Counting recombination events
+----------------------------------
+```{r eval=TRUE, echo=FALSE}
+
+source("SharedFunctions.R")
+
+```
+We can count the ecombination events from the state path data with this function.
+```{r}
+CountRecombEvents<-function(parent.path){
+  current<-parent.path[1];
+  counter<-0;
+  for(val in parent.path){
+    if(val!=current){
+      counter<-counter+1
+      current<-val
+    }
+  }
+  return (counter)
+}
+
+```
+We will peform a simulation and estimation and count simulated and estimated recombination events.
+```{r}
+  start.p<-c(0.25,0.25,0.25,0.25)
+  recombination.rate<-0.001
+  trans.p<-GetTransitionProb(recombination.rate)
+  child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
+  child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
+  obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+  v.2<-Viterbi2 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+  simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+  estimated<-rownames(trans.p)[vitrowmax.2]
+  sim.results<-sum(simulated==estimated)
+```
+The number for true positives from our estimation would be given by. 
+```{r}
+  sum(sim.results)
+```
+and the percentage of true positives is `r sum(sim.results)/10000*100`%
+
+And counting recombination events
+```{r}
+   CountRecombEvents(simulated)
+   CountRecombEvents(estimated)
+   CountRecombEvents(estimated)-CountRecombEvents(simulated)
+   10000-sim.results
+```
+Another simulation using the same recombination rate
+```{r}
+  child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
+  child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
+  obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+  v.2<-Viterbi2 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+  simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+  estimated<-rownames(trans.p)[vitrowmax.2]
+  sim.results<-sum(simulated==estimated)
+  sim.results
+  CountRecombEvents(simulated)
+  CountRecombEvents(estimated)
+  CountRecombEvents(estimated)-CountRecombEvents(simulated)
+  10000-sim.results
+```
+I appears wrong estimations from our model make us overestimate the number of recombination events.
+Let's update our simulator to report the numer of recombination events per simulation in 
+addition to the number of correct estimation of parental contribuitions.
+```{r}
+ViterbiSimulator2 <- function(num.markers,num.simulations,start.p,recombination.rate){ 
+  sim.results<-c()
+  sim.recomb.events<-c()
+  est.recomb.events<-c()
+  trans.p<-GetTransitionProb(recombination.rate)
+  for (i in 1:num.simulations){
+    child1.chromatid.mom<-SimulateChromatid(num.markers,recombination.rate) #100 markers
+    child1.chromatid.dad<-SimulateChromatid(num.markers,recombination.rate)
+    obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+    v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    sim.results[i]<-sum(simulated==estimated)
+    sim.recomb.events[i]<-CountRecombEvents(simulated);
+    est.recomb.events[i]<-CountRecombEvents(estimated);
+  }
+  return(list(sim.results=sim.results,sim.recomb.events=sim.recomb.events,est.recomb.events=est.recomb.events))
+}  
+
+simul.results<-ViterbiSimulator2(1000,100,c(0.25,0.25,0.25,0.25),0.01)
+summary(simul.results)
+
+summary(reg1<-lm(simul.results$est.recomb.events~simul.results$sim.recomb.events))
+plot(simul.results$est.recomb.events~simul.results$sim.recomb.events)
+abline(reg1)
+
+
+```
+
+We can see that although we are overestimating recombination events, they are proportional to the simulted number of recombination events.
+Now let's test the same but with 10,000 markers and recombination rate = 0.001 (50 simulations).
+
+```{r}
+simul.results<-ViterbiSimulator2(10000,50,c(0.25,0.25,0.25,0.25),0.001)
+summary(simul.results)
+summary(reg1<-lm(simul.results$est.recomb.events~simul.results$sim.recomb.events))
+plot(simul.results$est.recomb.events~simul.results$sim.recomb.events)
+abline(reg1)
+```
+
+#### Author
+Luis Avila (lmavila@gmail.com)

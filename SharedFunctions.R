@@ -133,4 +133,37 @@ ViterbiSimulator <- function(num.markers,num.simulations,start.p,recombination.r
     sim.results[i]<-sum(simulated==estimated)
   }
   return(sim.results)
+}
+
+ViterbiSimulator2 <- function(num.markers,num.simulations,start.p,recombination.rate){ 
+  sim.results<-c()
+  sim.recomb.events<-c()
+  est.recomb.events<-c()
+  trans.p<-GetTransitionProb(recombination.rate)
+  for (i in 1:num.simulations){
+    child1.chromatid.mom<-SimulateChromatid(num.markers,recombination.rate) #100 markers
+    child1.chromatid.dad<-SimulateChromatid(num.markers,recombination.rate)
+    obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+    v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    sim.results[i]<-sum(simulated==estimated)
+    sim.recomb.events[i]<-CountRecombEvents(simulated);
+    est.recomb.events[i]<-CountRecombEvents(estimated);
+  }
+  return(list(sim.results=sim.results,sim.recomb.events=sim.recomb.events,est.recomb.events=est.recomb.events))
 }  
+ 
+
+CountRecombEvents<-function(parent.path){
+  current<-parent.path[1];
+  counter<-0;
+  for(val in parent.path){
+    if(val!=current){
+      counter<-counter+1
+      current<-val
+    }
+  }
+  return (counter)
+} 
