@@ -5,7 +5,7 @@
 source("SharedFunctions.R")
 
 ```
-We can count the ecombination events from the state path data with this function.
+We can count the recombination events from the state path data with this function.
 ```{r}
 CountRecombEvents<-function(parent.path){
   current<-parent.path[1];
