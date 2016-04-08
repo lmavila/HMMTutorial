@@ -2,7 +2,7 @@
 An R tutorial on how to use HHMs to find recombination events in GBS data
 from a biparental cross.
 
-Files are in R markdown format .Rmda
+Files are in R markdown format .Rmd
 
 can be rendered with the push of a buttom from RStudio,
 
