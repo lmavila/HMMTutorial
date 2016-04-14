@@ -28,7 +28,7 @@ We will peform a simulation and estimation and count simulated and estimated rec
   child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
   child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
   obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
-  v.2<-Viterbi2 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
   vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
   simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
   estimated<-rownames(trans.p)[vitrowmax.2]
@@ -52,7 +52,7 @@ Another simulation using the same recombination rate
   child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
   child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
   obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
-  v.2<-Viterbi2 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
   vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
   simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
   estimated<-rownames(trans.p)[vitrowmax.2]
