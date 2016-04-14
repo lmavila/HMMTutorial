@@ -91,7 +91,7 @@ simul.results<-ViterbiSimulator2(1000,100,c(0.25,0.25,0.25,0.25),0.01)
 summary(simul.results)
 
 summary(reg1<-lm(simul.results$est.recomb.events~simul.results$sim.recomb.events))
-plot(simul.results$est.recomb.events~simul.results$sim.recomb.events)
+plot(simul.results$est.recomb.events~simul.results$sim.recomb.events,ylab="estimated",xlab="simulated",main="Number of recombination events\n1000 loci, r=0.01")
 abline(reg1)
 
 
@@ -104,7 +104,7 @@ Now let's test the same but with 10,000 markers and recombination rate = 0.001 (
 simul.results<-ViterbiSimulator2(10000,50,c(0.25,0.25,0.25,0.25),0.001)
 summary(simul.results)
 summary(reg1<-lm(simul.results$est.recomb.events~simul.results$sim.recomb.events))
-plot(simul.results$est.recomb.events~simul.results$sim.recomb.events)
+plot(simul.results$est.recomb.events~simul.results$sim.recomb.events,ylab="estimated",xlab="simulated",main="Number of recombination events\n10,000 loci, r=0.001")
 abline(reg1)
 ```
 
