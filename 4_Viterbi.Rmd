@@ -64,7 +64,7 @@ obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
 obs
 
 
-start.p<-c(0.4,0.2,0.2,0.2);
+start.p<-c(0.25,0.25,0.25,0.25);
 
 trans.p<-GetTransitionProb(0.3)
 
@@ -118,7 +118,7 @@ simulated==estimated
 
 ```
 
-The model seems to be working with the simulated data, most predictions are right
+The model seems to be working with the simulated data, some predictions are right
 and some are wrong. To better assess the accuracy of the model we will run simulations
 with more markers and different recombination rates.
 
