@@ -1,62 +1,199 @@
-8. Estimating Recombination rate
+8. Estimating recombination rate
 ----------------------------------
 ```{r eval=TRUE, echo=FALSE}
 
 source("SharedFunctions.R")
 
 ```
+#### First we simulate for 10,000 loci and r=0.001
 
-We will peform a simulation and estimation and count simulated and estimated recombination events.
 ```{r}
   start.p<-c(0.25,0.25,0.25,0.25)
-  recombination.rate<-0.001
+  recombination.rate<-0.001 #simulating with r=0.001
 
   trans.p<-GetTransitionProb(recombination.rate)
   child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
   child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
   simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
   obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+```  
+#### And now we try to estimate using an arbitrary r=0.4 in our transition matrix
+```{r}
   
-  trans.p<-GetTransitionProb(0.3);
-  trans.p
+
+  trans.p<-GetTransitionProb(0.4); #we will estimate with r=0.4
   v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
-  dim(v.2)
-  v.2[1000,]
-  max(v.2[10000,])
   vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
   estimated<-rownames(trans.p)[vitrowmax.2]
-  sim.results<-sum(simulated==estimated)
-  sim.results
-  #estimated
+  CountRecombEvents(simulated)
+  CountRecombEvents(estimated)
   
-  trans.p<-GetTransitionProb(0.01);
-  trans.p
-  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
-  dim(v.2)
-  v.2[1000,]
-  max(v.2[10000,])
-  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
-  estimated<-rownames(trans.p)[vitrowmax.2]
-  sim.results<-sum(simulated==estimated)
-  sim.results
-  #estimated
+```
+And our estimated recombination rate could be calculated like this:
+```{r}
+  CountRecombEvents(estimated)/(10000*2)
   
-  trans.p<-GetTransitionProb(0.001);
-  trans.p
-  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
-  dim(v.2)
-  v.2[1000,]
-  max(v.2[10000,])
-  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
-  estimated<-rownames(trans.p)[vitrowmax.2]
-  sim.results<-sum(simulated==estimated)
-  sim.results
   
 ```
 
-We can see that as the recombination rate use in our transition probabilities
-approaches the one used for the simulatios our max probability of the sequence path
+Now testing different initial recombination rates
+```{r}
+  rates<-c(0.5,0.4,0.3,0.3,0.2,0.1,0.01,0.001)
+  estimated.rate<-c()
+  recomb.count<-c()
+  index<-1;
+  for(rate in rates){
+    trans.p<-GetTransitionProb(rate); 
+    v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    recomb.count[index]<-CountRecombEvents(estimated)
+    estimated.rate[index]<- recomb.count[index]/(10000*2);
+    index<-index+1
+  }
+  
+  rates
+  estimated.rate
+  recomb.count
+  
 
+    
+  plot(rates,estimated.rate,xlab="arbitrary recomb. rate given to transition matrix",ylab="estimated recomb. rate",main="r.rate estimations with different starting r.rate\n on one simulation with 10,000 loci and r=0.001")
+  
+```
+
+#### Now we simulate with 10,000 loci and r=0.01
+
+```{r}
+  recombination.rate<-0.01 #simulating with r=0.001
+  trans.p<-GetTransitionProb(recombination.rate)
+  child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
+  child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
+  simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+  obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+  
+```
+
+#### And now we try to estimate using an arbitrary r=0.4 in our transition matrix
+```{r}
+  
+
+  trans.p<-GetTransitionProb(0.4); #we will estimate with r=0.4
+  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+  estimated<-rownames(trans.p)[vitrowmax.2]
+  CountRecombEvents(simulated)
+  CountRecombEvents(estimated)
+  
+```
+And our estimated recombination rate could be calculated like this:
+```{r}
+  CountRecombEvents(estimated)/(10000*2)
+  
+  
+```
+
+Now testing different initial recombination rates
+```{r}
+  rates<-c(0.5,0.4,0.3,0.3,0.2,0.1,0.01,0.001)
+  estimated.rate<-c()
+  recomb.count<-c()
+  index<-1;
+  for(rate in rates){
+    trans.p<-GetTransitionProb(rate); 
+    v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    recomb.count[index]<-CountRecombEvents(estimated)
+    estimated.rate[index]<- recomb.count[index]/(10000*2);
+    index<-index+1
+  }
+  
+  rates
+  estimated.rate
+  recomb.count
+  
+
+    
+  plot(rates,estimated.rate,xlab="arbitrary recomb. rate given to transition matrix",ylab="estimated recomb. rate",main="r.rate estimations with different starting r.rate\n on one simulation with 10,000 loci and r=0.01")
+  
+```
+
+#### Now we simulate wih 10,000 loci and r=0.05
+
+```{r}
+  recombination.rate<-0.05 #simulating with r=0.001
+  trans.p<-GetTransitionProb(recombination.rate)
+  child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
+  child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
+  simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+  obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+  
+```
+
+Now testing different initial recombination rates
+```{r}
+  rates<-c(0.5,0.4,0.3,0.3,0.2,0.1,0.01,0.001)
+  estimated.rate<-c()
+  recomb.count<-c()
+  index<-1;
+  for(rate in rates){
+    trans.p<-GetTransitionProb(rate);
+    v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    recomb.count[index]<-CountRecombEvents(estimated)
+    estimated.rate[index]<- recomb.count[index]/(10000*2);
+    index<-index+1
+  }
+  
+  rates
+  estimated.rate
+  recomb.count
+  
+
+    
+  plot(rates,estimated.rate,xlab="arbitrary recomb. rate given to transition matrix",ylab="estimated recomb. rate",main="r.rate estimations with different starting r.rate\n on one simulation with 10,000 loci and r=0.05")
+  
+```
+
+#### Now we simulate wih 10,000 loci and r=0.1
+
+```{r}
+  recombination.rate<-0.1 #simulating with r=0.001
+  trans.p<-GetTransitionProb(recombination.rate)
+  child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
+  child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
+  simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+  obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+  
+```
+
+Now testing different initial recombination rates
+```{r}
+  rates<-c(0.5,0.4,0.3,0.3,0.2,0.1,0.01,0.001)
+  estimated.rate<-c()
+  recomb.count<-c()
+  index<-1;
+  for(rate in rates){
+    trans.p<-GetTransitionProb(rate);
+    v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    recomb.count[index]<-CountRecombEvents(estimated)
+    estimated.rate[index]<- recomb.count[index]/(10000*2);
+    index<-index+1
+  }
+  
+  rates
+  estimated.rate
+  recomb.count
+  
+
+    
+  plot(rates,estimated.rate,xlab="arbitrary recomb. rate given to transition matrix",ylab="estimated recomb. rate",main="r.rate estimations with different starting r.rate\n on one simulation with 10,000 loci and r=0.1")
+  
+```
 
 #### Author
 Luis Avila (lmavila@gmail.com)
