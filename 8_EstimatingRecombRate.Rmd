@@ -65,7 +65,7 @@ Now testing different initial recombination rates
 #### Now we simulate with 10,000 loci and r=0.01
 
 ```{r}
-  recombination.rate<-0.01 #simulating with r=0.001
+  recombination.rate<-0.01 #simulating with r=0.01
   trans.p<-GetTransitionProb(recombination.rate)
   child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
   child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
@@ -122,7 +122,7 @@ Now testing different initial recombination rates
 #### Now we simulate wih 10,000 loci and r=0.05
 
 ```{r}
-  recombination.rate<-0.05 #simulating with r=0.001
+  recombination.rate<-0.05 #simulating with r=0.05
   trans.p<-GetTransitionProb(recombination.rate)
   child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
   child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
@@ -160,7 +160,7 @@ Now testing different initial recombination rates
 #### Now we simulate wih 10,000 loci and r=0.1
 
 ```{r}
-  recombination.rate<-0.1 #simulating with r=0.001
+  recombination.rate<-0.1 #simulating with r=0.1
   trans.p<-GetTransitionProb(recombination.rate)
   child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
   child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
