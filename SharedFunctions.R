@@ -57,18 +57,20 @@ GetEmissionProb<-function(mom.maternal,mom.paternal,dad.maternal,dad.paternal){
 
 GetTransitionProb<-function(r){
   # r is the recombination rate
-  transition.matrix<-matrix(rep(r/3,16),ncol=4);
-  transition.matrix[1,1]=1-r;
-  transition.matrix[2,2]=1-r;
-  transition.matrix[3,3]=1-r;
-  transition.matrix[4,4]=1-r;
+  transition.matrix<-matrix(rep(r*(1-r),16),ncol=4);
+  transition.matrix[1,1]=(1-r)^2;
+  transition.matrix[2,2]=(1-r)^2;
+  transition.matrix[3,3]=(1-r)^2;
+  transition.matrix[4,4]=(1-r)^2;
+  transition.matrix[4,1]=r^2;
+  transition.matrix[3,2]=r^2;
+  transition.matrix[2,3]=r^2;
+  transition.matrix[1,4]=r^2;
   rownames(transition.matrix)<-c('mom.maternal/dad.maternal','mom.maternal/dad.paternal',
                                  'mom.paternal/dad.maternal','mom.paternal/dad.paternal')
   colnames(transition.matrix)<-rownames(transition.matrix)      
   return(transition.matrix)
 }
-
-
 
 
 Viterbi2 <- function(obs,start.p, trans.p,mom.chromatid,dad.chromatid) {
