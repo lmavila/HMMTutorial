@@ -123,30 +123,30 @@ $(document).ready(function () {
 child1.chromatid.dad&lt;-SimulateChromatid()
 child1.chromatid.mom[&quot;child&quot;]</code></pre>
 <pre><code>## $child
-##  [1] 0 0 1 0 0 1 0 0 0 1</code></pre>
+##  [1] 1 1 1 1 0 1 1 1 0 0</code></pre>
 <pre class="r"><code>child1.chromatid.dad[&quot;child&quot;]</code></pre>
 <pre><code>## $child
-##  [1] 0 0 1 0 1 0 1 1 0 0</code></pre>
+##  [1] 0 1 0 0 1 0 1 0 1 0</code></pre>
 <p>Then our diploid “child” genotype would be. (Remember, 0 for homozygous reference, 1 for heterozygous and 2 for homozygous alternate allele).</p>
 <pre class="r"><code>child1.genotype&lt;-child1.chromatid.mom$child+child1.chromatid.dad$child
 child1.genotype</code></pre>
-<pre><code>##  [1] 0 0 2 0 1 1 1 1 0 1</code></pre>
+<pre><code>##  [1] 1 2 1 1 1 1 2 1 1 0</code></pre>
 <p>And we still have acces to the phased parent genotype.</p>
 <pre class="r"><code>child1.chromatid.mom$maternal</code></pre>
-<pre><code>##  [1] 0 0 0 1 0 0 0 0 0 1</code></pre>
+<pre><code>##  [1] 1 1 1 0 1 1 1 1 0 0</code></pre>
 <pre class="r"><code>child1.chromatid.mom$paternal</code></pre>
-<pre><code>##  [1] 0 0 1 0 1 1 0 0 1 1</code></pre>
+<pre><code>##  [1] 1 1 1 1 0 0 1 0 1 0</code></pre>
 <pre class="r"><code>child1.chromatid.dad$maternal</code></pre>
-<pre><code>##  [1] 1 0 1 0 0 0 1 1 0 1</code></pre>
+<pre><code>##  [1] 0 1 0 0 1 0 0 0 0 0</code></pre>
 <pre class="r"><code>child1.chromatid.dad$paternal</code></pre>
-<pre><code>##  [1] 0 0 1 0 1 0 0 1 0 0</code></pre>
+<pre><code>##  [1] 0 1 1 0 1 0 1 0 1 1</code></pre>
 <p>Now using the diploid child genotype and parental phased chromatid genotypes we can infer the parent.path with a Hidden Markov Model (HMM), and compare our inference to the actual parent.paths we have stored from the simulation.</p>
 <pre class="r"><code>child1.chromatid.mom$parent.path</code></pre>
-<pre><code>##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;paternal&quot;
-##  [7] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot;</code></pre>
+<pre><code>##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot;
+##  [7] &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot;</code></pre>
 <pre class="r"><code>child1.chromatid.dad$parent.path</code></pre>
-<pre><code>##  [1] &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot; &quot;maternal&quot;
-##  [7] &quot;maternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot;</code></pre>
+<pre><code>##  [1] &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;maternal&quot; &quot;paternal&quot;
+##  [7] &quot;paternal&quot; &quot;paternal&quot; &quot;paternal&quot; &quot;maternal&quot;</code></pre>
 </div>
 <div id="defining-our-hmm" class="section level4">
 <h4>Defining our HMM</h4>
@@ -182,42 +182,46 @@ child1.genotype</code></pre>
 <tbody>
 <tr class="odd">
 <td align="right"><strong>mom.maternal/dad.maternal</strong></td>
-<td align="center">1-r</td>
-<td align="center">r/3</td>
-<td align="center">r/3</td>
-<td align="center">r/3</td>
+<td align="center">(1-r)(1-r)</td>
+<td align="center">(1-r)r</td>
+<td align="center">(1-r)r</td>
+<td align="center">r*r</td>
 </tr>
 <tr class="even">
 <td align="right"><strong>mom.maternal/dad.paternal</strong></td>
-<td align="center">r/3</td>
-<td align="center">1-r</td>
-<td align="center">r/3</td>
-<td align="center">r/3</td>
+<td align="center">(1-r)r</td>
+<td align="center">(1-r)(1-r)</td>
+<td align="center">r*r</td>
+<td align="center">(1-r)r</td>
 </tr>
 <tr class="odd">
 <td align="right"><strong>mom.paternal/dad.maternal</strong></td>
-<td align="center">r/3</td>
-<td align="center">r/3</td>
-<td align="center">1-r</td>
-<td align="center">r/3</td>
+<td align="center">(1-r)r</td>
+<td align="center">r*r</td>
+<td align="center">(1-r)(1-r)</td>
+<td align="center">(1-r)r</td>
 </tr>
 <tr class="even">
 <td align="right"><strong>mom.paternal/dad.paternal</strong></td>
-<td align="center">r/3</td>
-<td align="center">r/3</td>
-<td align="center">r/3</td>
-<td align="center">1-r</td>
+<td align="center">r*r</td>
+<td align="center">(1-r)r</td>
+<td align="center">(1-r)r</td>
+<td align="center">(1-r)(1-r)</td>
 </tr>
 </tbody>
 </table>
 <p>It woud be good to have a function to create this transition matrix given a recombination rate.</p>
 <pre class="r"><code>GetTransitionProb&lt;-function(r){
   # r is the recombination rate
-  transition.matrix&lt;-matrix(rep(r/3,16),ncol=4);
-  transition.matrix[1,1]=1-r;
-  transition.matrix[2,2]=1-r;
-  transition.matrix[3,3]=1-r;
-  transition.matrix[4,4]=1-r;
+  transition.matrix&lt;-matrix(rep(r*(1-r),16),ncol=4);
+  transition.matrix[1,1]=(1-r)^2;
+  transition.matrix[2,2]=(1-r)^2;
+  transition.matrix[3,3]=(1-r)^2;
+  transition.matrix[4,4]=(1-r)^2;
+  transition.matrix[4,1]=r^2;
+  transition.matrix[3,2]=r^2;
+  transition.matrix[2,3]=r^2;
+  transition.matrix[1,4]=r^2;
   rownames(transition.matrix)&lt;-c('mom.maternal/dad.maternal','mom.maternal/dad.paternal',
                                  'mom.paternal/dad.maternal','mom.paternal/dad.paternal')
   colnames(transition.matrix)&lt;-rownames(transition.matrix)      
@@ -226,25 +230,25 @@ child1.genotype</code></pre>
 
 GetTransitionProb(0.2)</code></pre>
 <pre><code>##                           mom.maternal/dad.maternal
-## mom.maternal/dad.maternal                0.80000000
-## mom.maternal/dad.paternal                0.06666667
-## mom.paternal/dad.maternal                0.06666667
-## mom.paternal/dad.paternal                0.06666667
+## mom.maternal/dad.maternal                      0.64
+## mom.maternal/dad.paternal                      0.16
+## mom.paternal/dad.maternal                      0.16
+## mom.paternal/dad.paternal                      0.04
 ##                           mom.maternal/dad.paternal
-## mom.maternal/dad.maternal                0.06666667
-## mom.maternal/dad.paternal                0.80000000
-## mom.paternal/dad.maternal                0.06666667
-## mom.paternal/dad.paternal                0.06666667
+## mom.maternal/dad.maternal                      0.16
+## mom.maternal/dad.paternal                      0.64
+## mom.paternal/dad.maternal                      0.04
+## mom.paternal/dad.paternal                      0.16
 ##                           mom.paternal/dad.maternal
-## mom.maternal/dad.maternal                0.06666667
-## mom.maternal/dad.paternal                0.06666667
-## mom.paternal/dad.maternal                0.80000000
-## mom.paternal/dad.paternal                0.06666667
+## mom.maternal/dad.maternal                      0.16
+## mom.maternal/dad.paternal                      0.04
+## mom.paternal/dad.maternal                      0.64
+## mom.paternal/dad.paternal                      0.16
 ##                           mom.paternal/dad.paternal
-## mom.maternal/dad.maternal                0.06666667
-## mom.maternal/dad.paternal                0.06666667
-## mom.paternal/dad.maternal                0.06666667
-## mom.paternal/dad.paternal                0.80000000</code></pre>
+## mom.maternal/dad.maternal                      0.04
+## mom.maternal/dad.paternal                      0.16
+## mom.paternal/dad.maternal                      0.16
+## mom.paternal/dad.paternal                      0.64</code></pre>
 <p>The emission probability matrix has the probabilities of observing O<sub>i</sub> given a G<sub>i</sub></p>
 <p>Because we have the genotype and phase of the parents we can use that information in our emission matrix. Depending on the genotypes of the parents we will have different emmission matrixes.</p>
 <p>At each locus we have 16 possible genotypes from the parents, the 4 parental chromatids can have 2 possible genotypes, reference or alternate (0 or 1), 2<sup>4</sup>=16.</p>
