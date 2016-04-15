@@ -1,0 +1,62 @@
+8. Estimating Recombination rate
+----------------------------------
+```{r eval=TRUE, echo=FALSE}
+
+source("SharedFunctions.R")
+
+```
+
+We will peform a simulation and estimation and count simulated and estimated recombination events.
+```{r}
+  start.p<-c(0.25,0.25,0.25,0.25)
+  recombination.rate<-0.001
+
+  trans.p<-GetTransitionProb(recombination.rate)
+  child1.chromatid.mom<-SimulateChromatid(10000,recombination.rate) 
+  child1.chromatid.dad<-SimulateChromatid(10000,recombination.rate)
+  simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+  obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+  
+  trans.p<-GetTransitionProb(0.3);
+  trans.p
+  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  dim(v.2)
+  v.2[1000,]
+  max(v.2[10000,])
+  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+  estimated<-rownames(trans.p)[vitrowmax.2]
+  sim.results<-sum(simulated==estimated)
+  sim.results
+  #estimated
+  
+  trans.p<-GetTransitionProb(0.01);
+  trans.p
+  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  dim(v.2)
+  v.2[1000,]
+  max(v.2[10000,])
+  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+  estimated<-rownames(trans.p)[vitrowmax.2]
+  sim.results<-sum(simulated==estimated)
+  sim.results
+  #estimated
+  
+  trans.p<-GetTransitionProb(0.001);
+  trans.p
+  v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
+  dim(v.2)
+  v.2[1000,]
+  max(v.2[10000,])
+  vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+  estimated<-rownames(trans.p)[vitrowmax.2]
+  sim.results<-sum(simulated==estimated)
+  sim.results
+  
+```
+
+We can see that as the recombination rate use in our transition probabilities
+approaches the one used for the simulatios our max probability of the sequence path
+
+
+#### Author
+Luis Avila (lmavila@gmail.com)
