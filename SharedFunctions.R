@@ -54,6 +54,62 @@ GetEmissionProb<-function(mom.maternal,mom.paternal,dad.maternal,dad.paternal){
   return(emission.matrix)
 }
 
+GetEmissionProbWithMissingData<-function(mom.maternal,mom.paternal,dad.maternal,dad.paternal,prob.missing){
+  row.1<-c(as.numeric(mom.maternal+dad.maternal==0),
+           as.numeric(mom.maternal+dad.maternal==1),
+           as.numeric(mom.maternal+dad.maternal==2))
+  row.2<-c(as.numeric(mom.maternal+dad.paternal==0),
+           as.numeric(mom.maternal+dad.paternal==1),
+           as.numeric(mom.maternal+dad.paternal==2)) 
+  row.3<-c(as.numeric(mom.paternal+dad.maternal==0),
+           as.numeric(mom.paternal+dad.maternal==1),
+           as.numeric(mom.paternal+dad.maternal==2))
+  row.4<-c(as.numeric(mom.paternal+dad.paternal==0),
+           as.numeric(mom.paternal+dad.paternal==1),
+           as.numeric(mom.paternal+dad.paternal==2))      
+  
+  emission.matrix<-rbind(row.1,row.2,row.3,row.4)
+  emission.matrix<-emission.matrix*(1-prob.missing)
+  emission.matrix<-cbind(emission.matrix,rep(prob.missing,4))
+  colnames(emission.matrix)<-c('0','1','2','3')
+  rownames(emission.matrix)<-c('mom.maternal/dad.maternal','mom.maternal/dad.paternal',
+                               'mom.paternal/dad.maternal','mom.paternal/dad.paternal')
+  
+  return(emission.matrix)
+}
+
+GetTransitionProbWithMissingData<-function(r,m){
+  # r is the recombination rate and m the prob of missing data
+  transition.matrix<-matrix(rep( (1-r)*r*(1-m) ,64),ncol=8);
+  transition.matrix[1,1]=(1-m)*(1-r)^2;
+  transition.matrix[2,2]=(1-m)*(1-r)^2;
+  transition.matrix[3,3]=(1-m)*(1-r)^2;
+  transition.matrix[4,4]=(1-m)*(1-r)^2;
+  transition.matrix[4,1]=(1-m)*r^2;
+  transition.matrix[3,2]=(1-m)*r^2;
+  transition.matrix[2,3]=(1-m)*r^2;
+  transition.matrix[1,4]=(1-m)*r^2;
+  transition.matrix[1:8,5:8]<-0;
+  transition.matrix[1,5]=m;
+  transition.matrix[2,6]=m;
+  transition.matrix[3,7]=m;
+  transition.matrix[4,8]=m;
+  transition.matrix[4,8]=m;
+  
+  transition.matrix[5,]=transition.matrix[1,];
+  transition.matrix[6,]=transition.matrix[2,];
+  transition.matrix[7,]=transition.matrix[3,];
+  transition.matrix[8,]=transition.matrix[4,];
+  
+  rownames(transition.matrix)<-c('mom.maternal/dad.maternal','mom.maternal/dad.paternal',
+  'mom.paternal/dad.maternal','mom.paternal/dad.paternal',
+  'N.a','N.b','N.c','N.d')
+  #rownames(transition.matrix)<-c('A','B','C','D',
+   #                              'N.a','N.b','N.c','N.d')
+  
+  colnames(transition.matrix)<-rownames(transition.matrix)      
+  return(transition.matrix)
+}
 
 GetTransitionProb<-function(r){
   # r is the recombination rate
@@ -120,6 +176,53 @@ Viterbi3 <- function(obs,start.p, trans.p,mom.chromatid,dad.chromatid) {
   
   return(v) 
 }
+ViterbiWithMissingData <- function(obs,start.p, trans.p,mom.chromatid,dad.chromatid,prob.missing) {
+  #initializing
+  v <- matrix(NA, nr=length(obs), nc=dim(trans.p)[1])
+  if(max(mom.chromatid$maternal[1],
+         mom.chromatid$paternal[1],
+         dad.chromatid$maternal[1],
+         dad.chromatid$paternal[1])>1){
+    # if there is any error on the parental phasing
+    # force an emission matrix ab initio
+    emit.p<-GetEmissionProbWithMissingData(0,0,0,0,prob.missing)
+  } else {
+    emit.p<-GetEmissionProbWithMissingData(mom.chromatid$maternal[1],
+                            mom.chromatid$paternal[1],
+                            dad.chromatid$maternal[1],
+                            dad.chromatid$paternal[1],prob.missing)
+  }
+  
+  emit.p<-emit.p+10^(-12) 
+  #print(emit.p)
+  old.emit.pe<-emit.p
+  for(i in 1:4){
+    v[1,i]=log(start.p[i],2)+log(emit.p[i,obs[1]+1],2)
+  }
+  
+  for(i in 2:length(obs)) {# from observation 2 to t
+   if(max(mom.chromatid$maternal[i],
+          mom.chromatid$paternal[i],
+          dad.chromatid$maternal[i],
+          dad.chromatid$paternal[i])>1){
+      # if there is any error on the parental phasing
+      #  keep old emission matrix
+    emit.p<-old.emit.pe
+    } else {
+      emit.p<-GetEmissionProbWithMissingData(mom.chromatid$maternal[i],
+                              mom.chromatid$paternal[i],
+                              dad.chromatid$maternal[i],
+                              dad.chromatid$paternal[i],prob.missing)
+      old.emit.pe<-emit.p
+    }
+   # print(emit.p++10^(-12))
+    for (l in 1:dim(trans.p)[1]) { #from state 1 to N (8 states)
+      v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
+    }
+  }   
+  return(v) 
+}
+
 
 ViterbiSimulator <- function(num.markers,num.simulations,start.p,recombination.rate){ 
   sim.results<-c()
@@ -168,4 +271,18 @@ CountRecombEvents<-function(parent.path){
     }
   }
   return (counter)
+} 
+
+ListRecombEvents<-function(parent.path){
+  current<-parent.path[1];
+  return.list<-c()
+  counter<-0;
+  for(val in parent.path){
+    counter<-counter+1
+    if(val!=current){
+      current<-val
+      return.list<-c(return.list,counter)
+    }
+  }
+  return (return.list)
 } 
