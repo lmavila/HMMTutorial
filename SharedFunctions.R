@@ -100,8 +100,8 @@ GetEmissionProbWithMissingDataAndError<-function(mom.maternal,mom.paternal,dad.m
   #testMat<-matrix(c(0,0,0,0,0,0,0.7,0.7,0.7),nrow=3)
   #cat(emission.matrix)
   emission.matrix<-apply(emission.matrix ,c(1,2),FUN=function(x){
-    if(x==0) { x<-x+0.2}
-    if(x>0.5) {x<-x-0.4}
+    if(x==0) { x<-x+0.01}
+    if(x>0.5) {x<-x-0.02}
     return (x)
   })
  # cat(emission.matrix)
@@ -283,7 +283,7 @@ ViterbiWithMissingDataAndError <- function(obs,start.p, trans.p,mom.chromatid,da
                                            dad.chromatid$paternal[1],prob.missing)
   }
   
-  emit.p<-emit.p+10^(-12) 
+  #emit.p<-emit.p+10^(-12) 
   #print(emit.p)
   old.emit.pe<-emit.p
   for(i in 1:4){
@@ -307,7 +307,8 @@ ViterbiWithMissingDataAndError <- function(obs,start.p, trans.p,mom.chromatid,da
     }
     # print(emit.p++10^(-12))
     for (l in 1:dim(trans.p)[1]) { #from state 1 to N (8 states)
-      v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
+     # v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
+      v[i,l] <- log(emit.p[l,obs[i]+1]) + max(v[(i-1),] + log( trans.p[l,],2))
     }
   }   
   return(v) 
