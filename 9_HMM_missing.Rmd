@@ -1,4 +1,4 @@
-3. Considering missing data
+9. Considering missing data
 -----------------------------
 #### Adjusting our model
 
