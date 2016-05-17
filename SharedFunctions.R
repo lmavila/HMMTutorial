@@ -100,8 +100,8 @@ GetEmissionProbWithMissingDataAndError<-function(mom.maternal,mom.paternal,dad.m
   #testMat<-matrix(c(0,0,0,0,0,0,0.7,0.7,0.7),nrow=3)
   #cat(emission.matrix)
   emission.matrix<-apply(emission.matrix ,c(1,2),FUN=function(x){
-    if(x==0) { x<-x+0.01}
-    if(x>0.5) {x<-x-0.02}
+    if(x==0) { x<-x+0.2}
+    if(x>0.5) {x<-x-0.4}
     return (x)
   })
  # cat(emission.matrix)
