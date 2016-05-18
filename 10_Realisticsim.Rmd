@@ -1,0 +1,136 @@
+10. A more realistic simulator
+-----------------------------
+#### A different nomenclature and more simulation
+Genotyping By Sequencing (GBS)  assays have usually very low coverage (4x)
+and hence have considerable errors. For example when calling a heterozygous
+locus, if a site is covered by only one read it will be called as homozygous
+for whatever allele is in that read. We will adjust our simulation code to produce
+progeny genotype values with errors and missing data.
+
+We will use the 16 emission matrixes presented in part 3 of the tutotial an add some probabiblities for errors.
+```{r eval=TRUE, echo=FALSE}
+
+source("SharedFunctions.R")
+
+
+```
+
+Our previous function for emission probabilities would work like this:
+
+```{r}
+GetEmissionProb(1,0,1,0)
+
+```
+We will use this error matrix for GBS data
+
+```{r}
+GetErrorAndMissingMatrix<-function(prob.missing=0.1){
+  error.matrix<-matrix(c(.98,.4,.01,.01,.2,.01,.01,.4,.98),
+                       nrow=3,
+                       dimnames=list(c("0","1","2"),c("0","1","2")))
+  error.missing.m<-error.matrix*(1-prob.missing)
+  error.missing.m<-cbind(error.missing.m,"3"=rep(prob.missing,3))
+  return(error.missing.m)
+}
+
+GetErrorAndMissingMatrix(0.1)  
+
+                      
+```
+
+
+we define our new emission probabilities matrix as follows:
+```{r}
+GetEmissionProbWithMissingDataAndError<-function(mom.maternal,mom.paternal,dad.maternal,dad.paternal,prob.missing){
+  row.1<-c(as.numeric(mom.maternal+dad.maternal==0),
+           as.numeric(mom.maternal+dad.maternal==1),
+           as.numeric(mom.maternal+dad.maternal==2))
+  row.2<-c(as.numeric(mom.maternal+dad.paternal==0),
+           as.numeric(mom.maternal+dad.paternal==1),
+           as.numeric(mom.maternal+dad.paternal==2))
+  row.3<-c(as.numeric(mom.paternal+dad.maternal==0),
+           as.numeric(mom.paternal+dad.maternal==1),
+           as.numeric(mom.paternal+dad.maternal==2))
+  row.4<-c(as.numeric(mom.paternal+dad.paternal==0),
+           as.numeric(mom.paternal+dad.paternal==1),
+           as.numeric(mom.paternal+dad.paternal==2))
+
+  emission.matrix<-rbind(row.1,row.2,row.3,row.4)
+#  emission.matrix<-emission.matrix*(1-prob.missing)
+  
+
+  error.missing.m<-GetErrorAndMissingMatrix(0.1)    
+  emission.matrix<-emission.matrix%*%error.missing.m
+
+  #emission.matrix<-cbind(emission.matrix,rep(prob.missing,4))
+  #colnames(emission.matrix)<-c('0','1','2','3')
+  rownames(emission.matrix)<-c('mom.maternal/dad.maternal',
+                               'mom.maternal/dad.paternal',
+                               'mom.paternal/dad.maternal',
+                               'mom.paternal/dad.paternal')
+  return(emission.matrix)
+}
+
+
+```
+And now we can test with the same parental haplotypes as before.
+```{r}
+GetEmissionProbWithMissingDataAndError(1,0,1,0,0.1)
+```
+
+
+
+#### A simulator with genotyping errors and missing data
+We simulated a diploid chromosome pair before using:
+```{r}
+child1.chromatid.mom<-SimulateChromatid()
+child1.chromatid.dad<-SimulateChromatid()
+child1.chromatid.mom["child"]
+child1.chromatid.mom$parent.path
+child1.chromatid.dad["child"]
+child1.chromatid.dad$parent.path
+child1.genotype<-child1.chromatid.mom$child+child1.chromatid.dad$child
+child1.genotype
+
+```
+
+Now we will use our emission probability matrix with error and missing data
+to simulate a more realistic cromosome pair using our emission matrix from the previous step.
+
+```{r}
+GetDiploidGenotypeWithErrors<-function(mom.chromosome, dad.chromosome,prob.missing)
+{
+  child.genotype<-c()
+  for(locus.index in 1:length(mom.chromosome$paternal)){
+
+     error.missing.m<-GetErrorAndMissingMatrix(prob.missing)
+     real.genotype.at.locus<-mom.chromosome$child[locus.index]+dad.chromosome$child[locus.index]
+     child.genotype[locus.index]<-sample(c(0,1,2,3),
+                                        1,
+                                        prob=error.missing.m[real.genotype.at.locus+1,])
+  } 
+  return(child.genotype)
+}
+```
+And we call our function to simulate a child genotype with errors
+```{r}
+GetDiploidGenotypeWithErrors(child1.chromatid.mom, child1.chromatid.dad,0.1)
+
+
+```
+
+for comparison we will simulate for 20 loci and 0.2 prob of recombination.
+```{r}
+child1.chromatid.mom<-SimulateChromatid(20,0.2)
+child1.chromatid.dad<-SimulateChromatid(20,0.2)
+child1.genotype<-child1.chromatid.mom$child+child1.chromatid.dad$child
+
+child1.genotype.with.errors<-GetDiploidGenotypeWithErrors(child1.chromatid.mom,child1.chromatid.dad,0.1)
+
+child1.genotype
+child1.genotype.with.errors
+```
+
+
+#### Author
+Luis Avila (lmavila@gmail.com)
