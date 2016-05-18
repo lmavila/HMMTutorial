@@ -78,6 +78,14 @@ GetEmissionProbWithMissingData<-function(mom.maternal,mom.paternal,dad.maternal,
   
   return(emission.matrix)
 }
+GetErrorAndMissingMatrix<-function(prob.missing=0.1){
+  error.matrix<-matrix(c(.98,.4,.01,.01,.2,.01,.01,.4,.98),
+                       nrow=3,
+                       dimnames=list(c("0","1","2"),c("0","1","2")))
+  error.missing.m<-error.matrix*(1-prob.missing)
+  error.missing.m<-cbind(error.missing.m,"3"=rep(prob.missing,3))
+  return(error.missing.m)
+}
 
 GetEmissionProbWithMissingDataAndError<-function(mom.maternal,mom.paternal,dad.maternal,dad.paternal,prob.missing){
   row.1<-c(as.numeric(mom.maternal+dad.maternal==0),
@@ -94,16 +102,21 @@ GetEmissionProbWithMissingDataAndError<-function(mom.maternal,mom.paternal,dad.m
            as.numeric(mom.paternal+dad.paternal==2))
   
   emission.matrix<-rbind(row.1,row.2,row.3,row.4)
-  emission.matrix<-emission.matrix*(1-prob.missing)
-  error.matrix<-matrix(c(.98,.4,.01,.01,.2,.01,.01,.4,.98),nrow=3)
-  emission.matrix<-emission.matrix%*%error.matrix
-
-  emission.matrix<-cbind(emission.matrix,rep(prob.missing,4))
-  colnames(emission.matrix)<-c('0','1','2','3')
-  rownames(emission.matrix)<-c('mom.maternal/dad.maternal','mom.maternal/dad.paternal',
-                               'mom.paternal/dad.maternal','mom.paternal/dad.paternal')
+  #  emission.matrix<-emission.matrix*(1-prob.missing)
+  
+  
+  error.missing.m<-GetErrorAndMissingMatrix(0.1)    
+  emission.matrix<-emission.matrix%*%error.missing.m
+  
+  #emission.matrix<-cbind(emission.matrix,rep(prob.missing,4))
+  #colnames(emission.matrix)<-c('0','1','2','3')
+  rownames(emission.matrix)<-c('mom.maternal/dad.maternal',
+                               'mom.maternal/dad.paternal',
+                               'mom.paternal/dad.maternal',
+                               'mom.paternal/dad.paternal')
   return(emission.matrix)
 }
+
 
 GetTransitionProbWithMissingData<-function(r,m){
   # r is the recombination rate and m the prob of missing data
