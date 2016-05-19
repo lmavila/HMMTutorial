@@ -354,6 +354,27 @@ ViterbiSimulator2 <- function(num.markers,num.simulations,start.p,recombination.
   }
   return(list(sim.results=sim.results,sim.recomb.events=sim.recomb.events,est.recomb.events=est.recomb.events))
 }  
+
+ViterbiSimulatorWithErrors <- function(num.markers,num.simulations,start.p,recombination.rate,prob.missing){ 
+  sim.results<-c()
+  sim.recomb.events<-c()
+  est.recomb.events<-c()
+  trans.p<-GetTransitionProb(recombination.rate)
+  for (i in 1:num.simulations){
+    child1.chromatid.mom<-SimulateChromatid(num.markers,recombination.rate) 
+    child1.chromatid.dad<-SimulateChromatid(num.markers,recombination.rate)
+    #obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
+    obs<-GetDiploidGenotypeWithErrors(child1.chromatid.mom,child1.chromatid.dad,prob.missing)
+    v.2<-ViterbiWithMissingDataAndError(obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad,prob.missing)
+    vitrowmax.2 <- apply(v.2, 1, function(x) which.max(x))
+    simulated<-paste("mom.",child1.chromatid.mom$parent.path,"/","dad.",child1.chromatid.dad$parent.path,sep="")
+    estimated<-rownames(trans.p)[vitrowmax.2]
+    sim.results[i]<-sum(simulated==estimated)
+    sim.recomb.events[i]<-CountRecombEvents(simulated);
+    est.recomb.events[i]<-CountRecombEvents(estimated);
+  }
+  return(list(sim.results=sim.results,sim.recomb.events=sim.recomb.events,est.recomb.events=est.recomb.events))
+}  
  
 
 CountRecombEvents<-function(parent.path){
