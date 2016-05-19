@@ -79,7 +79,11 @@ GetEmissionProbWithMissingData<-function(mom.maternal,mom.paternal,dad.maternal,
   return(emission.matrix)
 }
 GetErrorAndMissingMatrix<-function(prob.missing=0.1){
-  error.matrix<-matrix(c(.98,.4,.01,.01,.2,.01,.01,.4,.98),
+  #ob0,ob1,ob2
+  #g0,0.9663,8e-04,0.0329
+  #g1,0.3674,0.3436,0.289
+  #g2,0.0017,0.0032,0.9951
+  error.matrix<-matrix(c(0.9663,0.3674,0.0017,8e-04,0.3436,0.0032,0.0329,0.289,0.9951),
                        nrow=3,
                        dimnames=list(c("0","1","2"),c("0","1","2")))
   error.missing.m<-error.matrix*(1-prob.missing)
