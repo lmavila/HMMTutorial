@@ -316,7 +316,7 @@ ViterbiSimulator <- function(num.markers,num.simulations,start.p,recombination.r
   sim.results<-c()
   trans.p<-GetTransitionProb(recombination.rate)
   for (i in 1:num.simulations){
-    child1.chromatid.mom<-SimulateChromatid(num.markers,recombination.rate) #100 markers
+    child1.chromatid.mom<-SimulateChromatid(num.markers,recombination.rate) 
     child1.chromatid.dad<-SimulateChromatid(num.markers,recombination.rate)
     obs<-child1.chromatid.mom$child+child1.chromatid.dad$child
     v.2<-Viterbi3 (obs,start.p, trans.p,child1.chromatid.mom,child1.chromatid.dad)
@@ -327,6 +327,9 @@ ViterbiSimulator <- function(num.markers,num.simulations,start.p,recombination.r
   }
   return(sim.results)
 }
+
+
+
 
 ViterbiSimulator2 <- function(num.markers,num.simulations,start.p,recombination.rate){ 
   sim.results<-c()
@@ -374,3 +377,17 @@ ListRecombEvents<-function(parent.path){
   }
   return (return.list)
 } 
+
+GetDiploidGenotypeWithErrors<-function(mom.chromosome, dad.chromosome,prob.missing)
+{
+  child.genotype<-c()
+  for(locus.index in 1:length(mom.chromosome$paternal)){
+    
+    error.missing.m<-GetErrorAndMissingMatrix(prob.missing)
+    real.genotype.at.locus<-mom.chromosome$child[locus.index]+dad.chromosome$child[locus.index]
+    child.genotype[locus.index]<-sample(c(0,1,2,3),
+                                        1,
+                                        prob=error.missing.m[real.genotype.at.locus+1,])
+  } 
+  return(child.genotype)
+}
