@@ -7,7 +7,7 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 
 
@@ -38,25 +38,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 
 
-
-</head>
-
-<body>
-
 <style type="text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
-img {
-  max-width:100%;
-  height: auto;
-}
 h1 {
   font-size: 34px;
 }
@@ -77,6 +59,30 @@ h5 {
 }
 h6 {
   font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -108,11 +114,12 @@ $(document).ready(function () {
 
 
 
+
 </div>
 
 
 <div id="considering-missing-data" class="section level2">
-<h2>3. Considering missing data</h2>
+<h2>9. Considering missing data</h2>
 <div id="adjusting-our-model" class="section level4">
 <h4>Adjusting our model</h4>
 <p>The emission probability matrix has the probabilities of observing O<sub>i</sub> given a G<sub>i</sub></p>
@@ -201,7 +208,7 @@ $(document).ready(function () {
     }
    # print(emit.p++10^(-12))
     for (l in 1:dim(trans.p)[1]) { #from state 1 to N (8 states)
-      v[i,l] &lt;- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
+      v[i,l] &lt;- log(emit.p[l,obs[i]+1]+10^(-12),2) + max(v[(i-1),] + log( trans.p[l,],2))
     }
   }   
   return(v) 

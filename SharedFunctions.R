@@ -214,7 +214,7 @@ Viterbi3 <- function(obs,start.p, trans.p,mom.chromatid,dad.chromatid) {
                              dad.chromatid$maternal[i],
                              dad.chromatid$paternal[i])
      for (l in 1:dim(trans.p)[1]) { #from state 1 to N (4 states)
-       v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
+       v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12),2) + max(v[(i-1),] + log( trans.p[l,],2))
      }
   }   
   
@@ -261,7 +261,7 @@ ViterbiWithMissingData <- function(obs,start.p, trans.p,mom.chromatid,dad.chroma
     }
    # print(emit.p++10^(-12))
     for (l in 1:dim(trans.p)[1]) { #from state 1 to N (8 states)
-      v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
+      v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12),2) + max(v[(i-1),] + log( trans.p[l,],2))
     }
   }   
   return(v) 
@@ -309,7 +309,7 @@ ViterbiWithMissingDataAndError <- function(obs,start.p, trans.p,mom.chromatid,da
     # print(emit.p++10^(-12))
     for (l in 1:dim(trans.p)[1]) { #from state 1 to N (8 states)
      # v[i,l] <- log(emit.p[l,obs[i]+1]+10^(-12)) + max(v[(i-1),] + log( trans.p[l,],2))
-      v[i,l] <- log(emit.p[l,obs[i]+1]) + max(v[(i-1),] + log( trans.p[l,],2))
+      v[i,l] <- log(emit.p[l,obs[i]+1],2) + max(v[(i-1),] + log( trans.p[l,],2))
     }
   }   
   return(v) 
