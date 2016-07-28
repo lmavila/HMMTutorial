@@ -1,0 +1,98 @@
+---
+title: "Montecarlo Estimation"
+author: "Luis Avila"
+date: "7/28/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+####A simple MonteCarlo approximation in R
+
+####We are going to estimate $\pi$.
+
+Imagine a circle in a square of side=1. The radio of that circle would be r=0.5.
+
+We know the area of a circle is $$\pi*r^2$$ 
+and the area of the square in terms of the radio would be $$(2*r)^2$$
+
+Now, a ratio of those areas would be
+$$\rho=\frac{Area of Circle}{Area of Square}=\frac{\pi*r^2}{(2*r)^2}=\frac{\pi}{4}$$
+
+so that $$\pi=4*\rho$$
+
+Now, to approximate $\rho$ we will generate random points in [0-1,0-1] and calculate the ratio of points that fall into the circunference to the points that fall off the circuference.
+
+Calculating for 100 points
+
+```{r}
+ n<-100
+ x<-runif(n,0,1)
+ y<-runif(n,0,1)
+ d<-(x^2+y^2<1)
+ plot(x,y,col=d+1,pch=19)
+ 
+ in.the.circle<-sum(d)
+ in.the.circle
+ off.the.circle<-(n-in.the.circle)
+ off.the.circle
+
+ pi.100<-(in.the.circle/n)*4 
+ pi.100
+
+```
+
+We repeat for 1,000 points
+```{r}
+ n<-1000
+ x<-runif(n,0,1)
+ y<-runif(n,0,1)
+ d<-(x^2+y^2<1)
+ plot(x,y,col=d+1,pch=19)
+ 
+ in.the.circle<-sum(d)
+ in.the.circle
+ off.the.circle<-(n-in.the.circle)
+ off.the.circle
+
+ pi.1000<-(in.the.circle/n)*4 
+ pi.1000
+
+```
+
+We repeat for 10,000 points
+```{r}
+ n<-10000
+ x<-runif(n,0,1)
+ y<-runif(n,0,1)
+ d<-(x^2+y^2<1)
+ plot(x,y,col=d+1,pch=19)
+ 
+ in.the.circle<-sum(d)
+ in.the.circle
+ off.the.circle<-(n-in.the.circle)
+ off.the.circle
+
+ pi.10000<-(in.the.circle/n)*4 
+ pi.10000
+
+```
+And for 200,000 points
+```{r}
+ n<-200000
+ x<-runif(n,0,1)
+ y<-runif(n,0,1)
+ d<-(x^2+y^2<1)
+ #plot(x,y,col=d+1,pch=19)
+ 
+ in.the.circle<-sum(d)
+ in.the.circle
+ off.the.circle<-(n-in.the.circle)
+ off.the.circle
+
+ pi.200000<-(in.the.circle/n)*4 
+ pi.200000
+
+```
+We can see that our approximation of $\pi$ tends to get closer to the actual `r pi` as we increase the number of randomly generated points.
